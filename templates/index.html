@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/styles.css') }}">
+    <title>SDXL-1.0 by FuZe</title>
+</head>
+<body>
+    <h1>SDXL-1.0 by FuZe</h1>
+    
+    <form method="post" action="/" enctype="multipart/form-data">
+        <b><label for="description">Describe any image you wish to see:</label></b>
+        <input type="text" name="description" required>
+        <button type="submit">Submit</button>
+    </form>
+
+    {% if result_image_path %}
+        {% if progress == "done" %}
+            <h2>Result Image:</h2>
+            <div id="image-container" style="display: flex; flex-direction: column;">
+                <canvas id="imageCanvas" width="500" height="500"></canvas>
+                <button id="downloadButton" onclick="downloadImage('{{ result_image_path }}')">Download Image</button>
+            </div>
+            <script>
+                var canvas = document.getElementById('imageCanvas');
+                var context = canvas.getContext('2d');
+                var img = new Image();
+                img.onload = function() {
+                    context.drawImage(img, 0, 0, canvas.width, canvas.height);
+                };
+                img.src = "{{ url_for('static', filename=result_image_path) }}";
+            </script>
+        {% else %}
+            <p>Generating image...</p>
+        {% endif %}
+    {% endif %}
+
+    <script>
+        function downloadImage(imagePath) {
+            var link = document.createElement('a');
+            link.href = "{{ url_for('static', filename='') }}" + imagePath;
+            link.download = 'downloaded_image.png';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    </script>
+</body>
+</html>
